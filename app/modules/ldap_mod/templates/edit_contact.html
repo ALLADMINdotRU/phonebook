@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">Редактирование пользователя: {{ user.cn }}</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <!-- Checkbox для преобразования в локальный контакт -->
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="make_local" name="make_local" 
+                        {% if not user.guid %}checked{% endif %}>
+                    <label class="form-check-label" for="make_local">Локальный</label>
+                    <div><small class="form-text text-muted">Если отмечено, контакт будет считаться локальным и не синхронизироваться с LDAP</small> </div>
+                </div>
+                <!-- Поле GUID (только для чтения) -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="guid" class="form-label">GUID</label>
+                        <input type="text" class="form-control" id="guid" name="guid" value="{{ user.guid or '' }}" {% if not user.guid %}readonly{% endif %} placeholder="Автоматически заполняется для LDAP контактов">
+                        <div class="form-text">Уникальный идентификатор  пользователя в LDAP</div>
+                    </div>
+
+
+
+                    <div class="col-md-6">
+                        <!-- Текущая фотография -->
+                        <label class="form-label">Текущее фото</label>
+                        <div>
+                            {% if user.photo %}
+                                <img src="data:image/jpeg;base64,{{ user.photo }}" 
+                                    class="rounded-circle" width="80" height="80"
+                                    alt="Фото сотрудника">
+                            {% else %}
+                                <div class="text-muted">Нет фото</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="cn" class="form-label">Полное имя *</label>
+                        <input type="text" class="form-control" id="cn" name="cn" 
+                            value="{{ user.cn }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="mail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="mail" name="mail" 
+                            value="{{ user.mail or '' }}">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="telephone" class="form-label">Рабочий телефон</label>
+                        <input type="tel" class="form-control" id="telephone" name="telephone" 
+                            value="{{ user.telephone or '' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="mobile" class="form-label">Мобильный телефон</label>
+                        <input type="tel" class="form-control" id="mobile" name="mobile" 
+                            value="{{ user.mobile or '' }}">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="title" class="form-label">Должность</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                            value="{{ user.title or '' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="department" class="form-label">Отдел</label>
+                        <input type="text" class="form-control" id="department" name="department" 
+                            value="{{ user.department or '' }}">
+                    </div>
+                </div>
+
+                <!-- Поле для загрузки новой фотографии -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="photo" class="form-label">Новая фотография</label>
+                        <input type="file" class="form-control" id="photo" name="photo" 
+                            accept="image/jpeg,image/png,image/gif">
+                        <div class="form-text">Загрузите новое фото (JPEG, PNG, GIF)</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" id="remove_photo" name="remove_photo">
+                            <label class="form-check-label" for="remove_photo">
+                                Удалить текущее фото
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Сохранить
+                    </button>
+                    <a href="{{ url_for('ldap.show_list_saved_contacts', server_id=user.server_id) }}" 
+                        class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Отмена
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const makeLocalCheckbox = document.getElementById('make_local');
+    const guidField = document.querySelector('input[name="guid"]');
+    
+    function toggleGuidField() {
+        if (makeLocalCheckbox.checked) {
+            guidField.value = '';
+            guidField.readOnly = true;
+            guidField.placeholder = 'Локальный контакт (GUID очищен)';
+        } else {
+            guidField.readOnly = false;
+            guidField.placeholder = 'Автоматически заполняется для LDAP контактов';
+        }
+    }
+    
+    makeLocalCheckbox.addEventListener('change', toggleGuidField);
+    toggleGuidField(); // Initial state
+});
+</script>
+
+{% endblock %}

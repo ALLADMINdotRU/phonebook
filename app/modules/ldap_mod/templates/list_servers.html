@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">Список организаций</h2>
+    
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive"> <!-- класс Bootstrap, который делает таблицы адаптивными на маленьких экранах. -->
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Последняя синхронизация</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for server in servers %}
+                        <tr>
+                            <td>{{ server.name }}</td>
+                            <td>    
+                                {% if server.last_sync_local %}
+                                    {{ server.last_sync_local.strftime('%d.%m.%Y %H:%M:%S') }}
+                                {% else %}
+                                    Никогда
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <div class="btn-group btn-group-sm">
+
+                                    <!-- Кнопка синхронизации -->
+                                    <form action="{{ url_for('ldap.sync_server', server_id=server.id) }}" method="POST" class="d-inline me-1">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-warning" title="Синхронизировать">
+                                            <i class="bi bi-arrow-repeat"></i> Синхронизировать
+                                        </button>
+                                    </form>
+                                    <!-- Кнопка проверки подключения LDAP -->
+                                    <form action="{{ url_for('ldap.test_ldap_connection') }}" method="POST" class="d-inline me-1">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="server_id" value="{{ server.id }}">
+                                        <button type="submit" class="btn btn-info" title="Проверить подключение LDAP">
+                                            <i class="bi bi-plug"></i> Тест LDAP
+                                        </button>
+                                    </form>
+                                    <!-- Кнопка проверки SMTP -->
+                                    <form action="{{ url_for('ldap.test_smtp_connection') }}" method="POST" class="d-inline me-1">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="server_id" value="{{ server.id }}">
+                                        <button type="submit" class="btn btn-outline-info" title="Проверить SMTP подключение">
+                                            <i class="bi bi-envelope"></i> Тест Email
+                                        </button>
+                                    </form>
+                                    <!-- Кнопка редактирования -->
+                                    <form action="{{ url_for('ldap.edit_ldap_server', server_id=server.id) }}" method="GET" class="d-inline me-1">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-download"></i> Редактировать
+                                        </button>
+                                    </form>
+                                    <!-- Кнопка контактов -->
+                                    <form action="{{ url_for('ldap.show_list_saved_contacts', server_id=server.id) }}" method="GET" class="d-inline me-1">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="bi bi-download"></i> Контакты
+                                        </button>
+                                    </form>
+                                    <!-- Кнопка карты -->
+                                    <form action="{{ url_for('map.show_map', server_id=server.id) }}" method="GET" class="d-inline me-1">
+                                        <button type="submit" class="btn btn-info">
+                                            <i class="bi bi-map"></i> Карта
+                                        </button>
+                                    </form>
+                                    <!-- Кнопка удаления -->
+                                    <form action="{{ url_for('ldap.delete_ldap_server', server_id=server.id) }}" method="POST" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить сервер {{ server.name }}?')"> Удалить</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">Нет сохраненных серверов</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- Кнопка добавления нового сервера -->
+        <a href="{{ url_for('ldap.add_ldap_server') }}"  class="btn btn-primary"> <i class="bi bi-plus-circle"></i> Добавить организацию </a>
+    </div>
+
+</div>
+{% endblock %}

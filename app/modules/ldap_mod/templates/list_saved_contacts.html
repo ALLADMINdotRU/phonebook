@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+<!-- Закрепленный блок кнопок с position: sticky -->
+<div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded sticky-top" style="top: 20px; z-index: 1000;">
+    <h2 class="my-0">Список контактов: {{ server.name }}</h2>
+    
+    <div class="btn-group">
+        <!-- Кнопка "Назад к организациям" -->
+        <form action="{{ url_for('ldap.list_ldap_servers')}}" method="GET" class="d-inline me-1">
+            <button type="submit" class="btn btn-secondary">
+                Назад
+            </button>
+        </form>
+
+        <!-- Кнопка для загрузки данных LDAP -->
+        <form action="{{ url_for('ldap.list_ldap_contacts', server_id=server.id) }}" method="GET" class="d-inline me-2">
+            <button type="submit" class="btn btn-info">
+                LDAP
+            </button>
+        </form>
+        
+        <!-- Кнопка для добавления нового пользователя -->
+        <form action="{{ url_for('ldap.add_new_contact', server_id=server.id) }}" method="GET" class="d-inline">
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Добавить
+            </button>
+        </form>
+    </div>
+</div>
+
+
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Фото</th>
+                            <th>Имя</th>
+                            <th>Email</th>
+                            <th>Телефон</th>
+                            <th>Мобильный</th>
+                            <th>Должность</th>
+                            <th>Отдел</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                {% if user.photo %}
+                                    <img src="data:image/jpeg;base64,{{ user.photo }}" 
+                                        class="rounded-circle" 
+                                        width="60" 
+                                        height="60"
+                                        alt="Фото сотрудника">
+                                {% else %}
+                                    <div class="no-photo">Нет фото</div>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.cn }}</td>
+                            <td>{{ user.mail or '-' }}</td>
+                            <td>{{ user.telephone or '-' }}</td>
+                            <td>{{ user.mobile or '-' }}</td>
+                            <td>{{ user.title or '-' }}</td>
+                            <td>{{ user.department or '-' }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <!-- Кнопка редактирования -->
+
+                                    <form action="{{ url_for('ldap.edit_saved_contact', user_id=user.id) }}" method="GET" class="d-inline me-1">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-download"></i>Редактировать
+                                        </button>
+                                    </form>
+
+                                    <!-- Форма удаления -->
+                                    <form action="{{ url_for('ldap.delete_saved_contact', user_id=user.id) }}" method="POST" class="d-inline  me-1">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-danger" 
+                                                onclick="return confirm('Удалить пользователя {{ user.cn }}?')">
+                                            <i class="bi bi-trash"></i>Удалить
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">Нет сохраненных пользователей</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<style>
+    /* Выравнивание для конкретных элементов */
+    .table td {
+        vertical-align: middle;
+    }
+    .no-photo {
+        width: 50px;
+        height: 50px;
+        background: #f0f0f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        font-size: 10px;
+    }
+
+    /* Новые стили для колонки с телефоном */
+    .phone-column {
+        min-width: 120px;  /* Минимальная ширина для номера */
+        white-space: nowrap; /* Запрет переноса текста */
+    }
+
+</style>
+{% endblock %}

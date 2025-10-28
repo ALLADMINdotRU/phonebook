@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Карта здания: {{ server.name }}</h4>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#helpModal">
+                            <i class="bi bi-question-circle"></i> Помощь
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="map-container" style="position: relative; height: calc(100vh - 200px); border: 1px solid #ddd; overflow: auto;">
+                        {% if server.building_plan_data %}
+                        <img id="building-plan" 
+                            src="{{ url_for('ldap.get_building_plan', id=server.id) }}" 
+                            alt="План здания" 
+                            style="width: auto; height: auto; max-width: none;">
+                        {% else %}
+                        <div class="text-center p-5">
+                            <i class="bi bi-building fs-1 text-muted"></i>
+                            <p class="mt-3 text-muted">План здания не загружен</p>
+                            <a href="{{ url_for('ldap.edit_ldap_server', server_id=server.id) }}" class="btn btn-primary">
+                                Загрузить план
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Контейнер для маркеров пользователей -->
+                        <div id="user-markers"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Пользователи</h5>
+                    <input type="text" id="user-search" class="form-control form-control-sm" placeholder="Поиск...">
+                </div>
+                <div class="card-body" style="max-height: calc(100vh - 200px); overflow-y: auto;">
+                    <div id="users-list">
+                        {% for user in users %}
+                        <div class="user-item mb-2 p-2 border rounded" 
+                             data-user-id="{{ user.id }}"
+                             {% if user.coordinates %}data-coordinates="{{ user.coordinates }}"{% endif %}
+                             {% if user.is_on_map %}data-on-map="true"{% endif %}>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ user.cn }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ user.title }}</small>
+                                    <br>
+                                    <small>{{ user.department }}</small>
+                                </div>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary btn-place" 
+                                            title="Разместить на карте">
+                                        <i class="bi bi-geo-alt"></i>
+                                    </button>
+                                    {% if user.is_on_map %}
+                                    <button class="btn btn-outline-success btn-find btn-sm" 
+                                            title="Найти на карте">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-remove" 
+                                            title="Убрать с карты">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+</div>
+
+<!-- Модальное окно помощи -->
+<div class="modal fade" id="helpModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Как работать с картой</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Как разместить пользователей на карте:</h6>
+                <ol>
+                    <li><strong>Нажмите кнопку "Разместить"</strong> рядом с нужным пользователем</li>
+                    <li><strong>Кликните на карте</strong> в том месте, где должен быть пользователь</li>
+                    <li><strong>Маркер появится автоматически</strong> - координаты сохранятся</li>
+                </ol>
+                
+                <h6>Управление маркерами:</h6>
+                <ul>
+                    <li>Кликните на маркер пользователя чтобы увидеть информацию</li>
+                    <li>Нажмите кнопку "Убрать с карты" чтобы удалить размещение</li>
+                    <li>Используйте поиск для быстрого нахождения пользователей</li>
+                </ul>
+                
+                <h6>Важно:</h6>
+                <ul>
+                    <li>Сначала загрузите план здания через редактирование сервера</li>
+                    <li>Координаты автоматически сохраняются при размещении</li>
+                    <li>Для изменения позиции - уберите и разместите заново</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Понятно</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('map.static', filename='map/script.js') }}"></script>
+{% endblock %}

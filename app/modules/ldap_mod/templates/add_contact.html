@@ -1,0 +1,109 @@
+{% extends "base.html" %}  {# Наследуем базовый шаблон #}
+
+{% block content %}  {# Начинаем блок контента #}
+<div class="container">
+    <h2 class="my-4">
+            Добавление пользователя
+    </h2>
+    
+    <div class="card">
+        <div class="card-body">
+            {# Форма для добавления пользователя с поддержкой загрузки файлов #}
+            <form method="POST" enctype="multipart/form-data">
+                {# CSRF токен для защиты от межсайтовой подделки запросов #}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                {# Если сервер уже указан, добавляем скрытое поле с его ID #}
+                <input type="hidden" name="server_id" value="{{ server_id }}">
+
+                {# Блок основных полей пользователя #}
+                <div class="row mb-3">
+
+
+                    
+                    {# Поле полного имени - обязательное #}
+                    <div class="col-md-6">
+                        <label for="cn" class="form-label">Полное имя *</label>
+                        <input type="text" class="form-control" id="cn" name="cn" 
+                            placeholder="Иванов Иван Иванович">
+                    </div>
+                </div>
+
+                {# Блок контактной информации #}
+                <div class="row mb-3">
+                    {# Поле email - необязательное #}
+                    <div class="col-md-6">
+                        <label for="mail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="mail" name="mail" 
+                            placeholder="ivanov@example.com">
+                    </div>
+                    
+                    {# Поле рабочего телефона - необязательное #}
+                    <div class="col-md-6">
+                        <label for="telephone" class="form-label">Рабочий телефон</label>
+                        <input type="tel" class="form-control" id="telephone" name="telephone" 
+                            placeholder="+7 (123) 456-78-90">
+                    </div>
+                </div>
+
+                {# Блок дополнительной информации #}
+                <div class="row mb-3">
+                    {# Поле мобильного телефона - необязательное #}
+                    <div class="col-md-6">
+                        <label for="mobile" class="form-label">Мобильный телефон</label>
+                        <input type="tel" class="form-control" id="mobile" name="mobile" 
+                            placeholder="+7 (123) 456-78-90">
+                    </div>
+                    
+                    {# Поле должности - необязательное #}
+                    <div class="col-md-6">
+                        <label for="title" class="form-label">Должность</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                            placeholder="Менеджер">
+                    </div>
+                </div>
+
+                {# Блок отдела и фотографии #}
+                <div class="row mb-3">
+                    {# Поле отдела - необязательное #}
+                    <div class="col-md-6">
+                        <label for="department" class="form-label">Отдел</label>
+                        <input type="text" class="form-control" id="department" name="department" 
+                            placeholder="Отдел продаж">
+                    </div>
+                    
+                    {# Поле загрузки фотографии - необязательное #}
+                    <div class="col-md-6">
+                        <label for="photo" class="form-label">Фотография</label>
+                        {# Input для загрузки файлов с ограничением по типам #}
+                        <input type="file" class="form-control" id="photo" name="photo" 
+                            accept="image/jpeg,image/png,image/gif">
+                        <div class="form-text">Загрузите фото в формате JPEG, PNG или GIF</div>
+                    </div>
+                </div>
+
+                {# Блок кнопок действий #}
+                <div class="d-flex gap-2">
+                    {# Кнопка отправки формы #}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Добавить
+                    </button>
+                    
+                    {# Кнопка отмены - меняет URL в зависимости от контекста #}
+                    {% if server_id %}
+                    {# Если добавляем для конкретного сервера - возвращаем к списку его пользователей #}
+                    <a href="{{ url_for('ldap.show_list_saved_contacts', server_id=server_id) }}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Отмена
+                    </a>
+                    {% else %}
+                    {# Если сервер не указан - возвращаем к списку серверов #}
+                    <a href="{{ url_for('ldap.list_ldap_servers') }}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Отмена
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}  {# Завершаем блок контента #}
