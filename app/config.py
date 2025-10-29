@@ -16,8 +16,8 @@ class BaseConfig:
     APP_BASE_URL = os.environ.get('APP_BASE_URL', 'http://localhost:5000')
 
     # Настройки авторизации
-    ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')  # или возьми из переменных окружения
-    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin')  # или возьми из переменных окружения
+    ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME')
+    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
     
 class Config(BaseConfig):
     """Конфигурация Flask приложения"""
@@ -41,4 +41,4 @@ class Config(BaseConfig):
 class DBCreationConfig(BaseConfig):
     """Конфигурация для создания БД"""
     POSTGRES_ADMIN_URI = os.environ.get('POSTGRES_ADMIN_URI')
-    DB_NAME = os.environ.get('DB_NAME')    
+    DB_NAME = os.environ.get('DB_NAME')

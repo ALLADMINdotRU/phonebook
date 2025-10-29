@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # Веб-приложение Flask
+  web:
+    # Используйте один из вариантов:
+    # 1. Соберите образ локально:
+    build: .
+    # 2. Используйте готовый образ из реестра:
+    # image: yourusername/phonebook-app:latest
+    
+    container_name: phone_book_web
+    ports:
+      - "5050:5050"  # Пробрасываем порт приложения на хост
+    
+    # Переменные окружения (рекомендуется использовать .env файл)
+    environment:
+      # Настройки Flask
+      - FLASK_ENV=production
+      - SECRET_KEY=your-very-secret-key-change-this-in-production
+      
+      # Настройки авторизации
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=secure-password-123
+      
+      # Настройки базы данных PostgreSQL
+      - DATABASE_URL=postgresql://phonebook_user:password123@db:5432/phonebook
+      - POSTGRES_ADMIN_URI=postgresql://phonebook_user:password123@db:5432/postgres
+      
+      # Дополнительные настройки
+      - TIME_ZONE_OFFSET=7
+      - LDAP_SYNC_ENABLED=false
+      - LDAP_SYNC_INTERVAL_MINUTES=60
+      - APP_BASE_URL=http://localhost:5050
+      
+    
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  # Сервер базы данных PostgreSQL
+  db:
+    image: postgres:13  # Используем официальный образ PostgreSQL версии 15
+    container_name: phone_book_db
+    environment:
+      - POSTGRES_DB=phonebook
+      - POSTGRES_USER=phonebook_user
+      - POSTGRES_PASSWORD=password123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"  # Опционально: для доступа к БД с хоста
+    restart: unless-stopped
+
+  # Опционально: pgAdmin для управления базой данных
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: phone_book_pgadmin
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=admin@example.com
+  #     - PGADMIN_DEFAULT_PASSWORD=admin
+  #   ports:
+  #     - "5050:80"
+  #   depends_on:
+  #     - db
+  #   restart: unless-stopped
+
+volumes:
+  # Том для постоянного хранения данных PostgreSQL
+  postgres_data:
+
+# Сети (опционально)
+# networks:
+#   default:
+#     name: phonebook_network
