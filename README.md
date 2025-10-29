@@ -1,7 +1,10 @@
 # PhoneBook - Веб-приложение телефонной книги
 
+![Скриншот PhoneBook](1.PNG){: width="800"}
+*Главная страница веб-приложения PhoneBook*
+
 ![Flask](https://img.shields.io/badge/Flask-3.1.1-green)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13-blue)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
 ![Docker](https://img.shields.io/badge/Docker-Ready-orange)
 
 Веб-приложение для управления корпоративной телефонной книгой с интеграцией LDAP, картами сотрудников и почтовыми уведомлениями.
@@ -84,19 +87,6 @@ POSTGRES_PORT=5432
 
 # URL подключения к базе данных
 DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-
-# Настройки LDAP (если используются)
-LDAP_SERVER=ldap://your-ldap-server.com
-LDAP_BASE_DN=dc=example,dc=com
-LDAP_USER=cn=admin,dc=example,dc=com
-LDAP_PASSWORD=ldap-password
-
-# Настройки почты (если используются)
-MAIL_SERVER=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USE_TLS=True
-MAIL_USERNAME=your-email@gmail.com
-MAIL_PASSWORD=your-app-password
 
 # Дополнительные настройки
 TIME_ZONE_OFFSET=7

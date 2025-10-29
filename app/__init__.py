@@ -38,7 +38,7 @@ def create_app(config_class='app.config.Config'):                   # запус
     with app.app_context():                                         # в этой части кода создаем таблицы для бд
         from sqlalchemy import inspect
         from app.models import User                                 # тут импортируем модели которые мы хотим реализовать в виде таблиц в БД
-        from app.modules.ldap_mod.models import LDAPServer         # импортируем модель БД LDAP
+        from app.modules.ldap_mod.models import LDAPServer          # импортируем модель БД LDAP
         inspector = inspect(db.engine)
 
         if not inspector.has_table('alembic_version'):              # Если нет таблицы версий, 
