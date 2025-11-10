@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <h2>Редактирование справочника</h2>  <!-- Измененный заголовок -->
+    
+    <!-- Форма редактирования с предзаполненными данными -->
+    <form method="POST" action="{{ url_for('ldap.edit_ldap_server', server_id=server.id) }}" enctype="multipart/form-data">
+        {{ form.hidden_tag() }} <!-- CSRF токен -->
+        
+        <div class="mb-3">
+            <h4>Название организации</h4>
+            {{ form.name(class="form-control") }}          <!-- Поле названия сервера -->
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Параметры LDAP сервера</h4>
+                {{ form.host.label }}{{ form.host(class="form-control") }}
+                {{ form.port.label }}{{ form.port(class="form-control") }}
+                {{ form.base_dn.label }}{{ form.base_dn(class="form-control") }}
+                {{ form.search_filter.label }}{{ form.search_filter(class="form-control", placeholder="(objectClass=person)") }}
+                <div class="form-check">
+                    {{ form.use_ssl(class="form-check-input") }}
+                    {{ form.use_ssl.label(class="form-check-label") }}
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h4>Учетные данные LDAP</h4>
+                {{ form.bind_login.label }}{{ form.bind_login(class="form-control") }}
+                {{ form.bind_password.label }}{{ form.bind_password(class="form-control", placeholder="Оставьте пустым чтобы не менять") }}
+                
+                <h4 class="mt-3">Синхронизация LDAP</h4>
+                <label for="last_sync" class="form-label">Время последней синхронизации</label>
+                <input type="datetime-local" class="form-control" id="last_sync" name="last_sync" value="{{ form.last_sync.data.strftime('%Y-%m-%dT%H:%M') if form.last_sync.data else '' }}">
+                {{ form.is_active(class="form-check-input") }}{{ form.is_active.label(class="form-check-label") }}
+                
+            </div>
+        </div>
+        
+        <!-- SMTP настройки -->
+        <div class="mt-4">
+            <h4>Настройки SMTP для уведомлений</h4>
+            
+            <div class="form-check mb-3">
+                {{ form.smtp_is_active(class="form-check-input") }}
+                {{ form.smtp_is_active.label(class="form-check-label") }}
+            </div>
+            <div class="smtp-field">  <!-- Только поля внутри этого блока -->
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.smtp_host.label }}{{ form.smtp_host(class="form-control") }}
+                        {{ form.smtp_port.label }}{{ form.smtp_port(class="form-control") }}
+                        {{ form.smtp_username.label }}{{ form.smtp_username(class="form-control") }}
+                        {{ form.smtp_password.label }}{{ form.smtp_password(class="form-control", placeholder="Оставьте пустым чтобы не менять") }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.smtp_from_email.label }}{{ form.smtp_from_email(class="form-control") }}
+                        {{ form.smtp_to_email.label }}{{ form.smtp_to_email(class="form-control") }}
+                        
+                        <div class="form-check mt-2">
+                            {{ form.smtp_use_tls(class="form-check-input") }}
+                            {{ form.smtp_use_tls.label(class="form-check-label") }}
+                        </div>
+                        
+                        <div class="form-check">
+                            {{ form.smtp_use_ssl(class="form-check-input") }}
+                            {{ form.smtp_use_ssl.label(class="form-check-label") }}
+                        </div>
+
+                        <div class="form-check">
+                            {{ form.notify_on_add(class="form-check-input") }}
+                            {{ form.notify_on_add.label(class="form-check-label") }}
+                        </div>
+                        
+                        <div class="form-check">
+                            {{ form.notify_on_update(class="form-check-input") }}
+                            {{ form.notify_on_update.label(class="form-check-label") }}
+                        </div>
+                    </div>
+                </div>
+            </div>   
+        </div>
+
+        <!-- План здания -->
+        <div class="mb-3">
+            <h4>План здания</h4>
+            
+            {% if server.building_plan_filename %}
+            <div class="alert alert-info mb-2">
+                <i class="bi bi-file-earmark"></i>
+                Текущий план: {{ server.building_plan_filename }}
+                <a href="{{ url_for('ldap.get_building_plan', id=server.id) }}" 
+                target="_blank" class="btn btn-sm btn-outline-primary ms-2">
+                    Просмотреть
+                </a>
+            </div>
+            {% endif %}
+            
+            <input type="file" class="form-control" id="building_plan" 
+                name="building_plan" accept=".svg,.png,.jpg,.jpeg">
+            <div class="form-text">
+                Загрузите новый план здания (SVG, PNG, JPG)
+            </div>
+        </div>
+
+
+        <!--  Описание -->
+        <div class="row mt-3">
+            <h4>Описание</h4>
+            <div class="col-12">
+                {{ form.description(class="form-control", rows="3") }}
+            </div>
+        </div>
+
+        <!-- Кнопки действий -->
+        <div class="mt-3">
+            <!-- Кнопка отправки основной формы -->
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+
+            <!-- Кнопка отмена -->
+            <a href="{{ url_for('ldap.list_ldap_servers') }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+
+<script>
+// Скрываем настройки SMTP 
+document.addEventListener('DOMContentLoaded', function() {
+    const smtpActive = document.getElementById('{{ form.smtp_is_active.id }}');
+    const smtpFields = document.querySelectorAll('.smtp-field');
+    
+    function toggleSmtpFields() {
+        smtpFields.forEach(field => {
+            field.style.display = smtpActive.checked ? 'block' : 'none';
+        });
+    }
+    
+    if (smtpActive) {
+        smtpActive.addEventListener('change', toggleSmtpFields);
+        toggleSmtpFields(); // Initial state
+    }
+});
+</script>
+
+{% endblock %}

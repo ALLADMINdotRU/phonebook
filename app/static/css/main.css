@@ -1,0 +1,33 @@
+/* Основные стили для приложения */
+body {
+    padding-top: 20px;
+    background-color: rgba(0, 0, 0, );
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Стили для таблицы LDAP серверов */
+#servers-table {
+    margin-top: 20px;
+}
+
+#servers-table th {
+    background-color: #f8f9fa;
+}
+
+/* Стили для формы */
+#ldap-form .form-control {
+    margin-bottom: 10px;
+}
+
+/* Стили для кнопок действий */
+.edit-btn, .delete-btn {
+    margin-right: 5px;
+}

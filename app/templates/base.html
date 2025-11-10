@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PHONE BOOK{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icons/favicon.svg') }}">
+
+    <!-- Bootstrap CSS -->
+    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="{{ url_for('static', filename='bootstrap/icons/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/static/css/main.css" rel="stylesheet">
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+{% block styles %}
+    <style>
+    /* Кастомный светло-серый навбар */
+    .navbar-custom-light {
+        background-color: #f8f9fa; /* Очень светлый серый */
+        border-bottom: 1px solid #e9ecef; /* Легкая граница снизу */
+    }
+
+    .navbar-custom-light .navbar-brand,
+    .navbar-custom-light .navbar-nav .nav-link {
+        color: #495057 !important; /* Темно-серый текст */
+    }
+
+    .navbar-custom-light .navbar-brand:hover,
+    .navbar-custom-light .navbar-nav .nav-link:hover {
+        color: #000 !important; /* Черный при наведении */
+    }
+
+    /* Стили для кнопок в навбаре */
+    .navbar-custom-light .btn-outline-custom {
+        color: #495057;
+        border-color: #dee2e6;
+    }
+
+    .navbar-custom-light .btn-outline-custom:hover {
+        color: #000;
+        background-color: #e9ecef;
+        border-color: #adb5bd;
+    }
+
+    /* Фон для темной темы */
+    body {
+        transition: background-color 0.3s ease;
+    }
+
+    [data-bs-theme="dark"] body {
+        background-color: #121212;
+    }
+
+    </style>
+
+{% endblock %}
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-custom-light">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
+                <i class="bi bi-telephone me-2"></i>Phone Book
+            </a>
+            
+<div class="navbar-nav ms-auto">
+    <!-- Переключатель темы -->
+    <div class="form-check form-switch ms-3">
+        <input class="form-check-input" type="checkbox" id="themeSwitch">
+        <label class="form-check-label" for="themeSwitch">
+            <i class="bi bi-moon"></i> Тёмная тема
+        </label>
+    </div>
+    
+    {% if session.user_id %}
+        <!-- Пользователь авторизован -->
+        {% if request.endpoint and 'phonebook' in request.endpoint %}
+            <a href="{{ url_for('ldap.list_ldap_servers') }}" class="btn btn-outline-custom btn-sm ms-2">
+                <i class="bi bi-gear"></i> Управление
+            </a>
+        {% elif request.endpoint and 'ldap' in request.endpoint %}
+            <a href="{{ url_for('phonebook.phonebook_index') }}" class="btn btn-outline-custom btn-sm ms-2">
+                <i class="bi bi-telephone"></i> Телефонная книга
+            </a>
+        {% elif request.endpoint and 'map' in request.endpoint %}
+            <a href="{{ url_for('ldap.list_ldap_servers') }}" class="btn btn-outline-custom btn-sm ms-2">
+                <i class="bi bi-arrow-left"></i> Назад
+            </a>
+        {% endif %}
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm ms-2">
+            <i class="bi bi-box-arrow-right"></i> Выйти
+        </a>
+    {% else %}
+        <!-- Пользователь не авторизован -->
+        {% if request.endpoint and 'auth' in request.endpoint %}
+            <!-- На странице авторизации показываем кнопку "Назад" -->
+            <a href="{{ url_for('phonebook.phonebook_index') }}" class="btn btn-outline-custom btn-sm ms-2">
+                <i class="bi bi-arrow-left"></i> Назад
+            </a>
+        {% else %}
+            <!-- На других страницах показываем кнопку "Войти" -->
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm ms-2">
+                <i class="bi bi-box-arrow-in-right"></i> Войти
+            </a>
+        {% endif %}
+    {% endif %}
+</div>
+
+
+        </div>
+    </nav>
+
+
+
+    <div>
+        <nav>
+
+        </nav>
+    </div>
+<!-- панель для flash сообщений -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+<!-- конец панель для flash сообщений -->
+    {% block content %}{% endblock %}
+    <!-- Bootstrap JS -->
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    
+    <script>
+    // Функция переключения темы с использованием Bootstrap
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM загружен - инициализация темы');
+        
+        const themeSwitch = document.getElementById('themeSwitch');
+        const html = document.documentElement;
+        
+        if (!themeSwitch) {
+            console.error('Переключатель темы не найден!');
+            return;
+        }
+                
+        // Загрузка сохраненной темы
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        
+        if (savedTheme === 'dark') {
+            themeSwitch.checked = true;
+            html.setAttribute('data-bs-theme', 'dark');
+        }
+        
+        // Обработчик переключения
+        themeSwitch.addEventListener('change', function() {
+            
+            if (this.checked) {
+                html.setAttribute('data-bs-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-bs-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

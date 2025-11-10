@@ -1,0 +1,252 @@
+/* Стили для модуля карты */
+
+.user-marker {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: #dc3545;
+    border: 2px solid white;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 900;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: all 0.2s ease, opacity 0.2s ease;
+}
+
+.user-marker:hover {
+    transform: scale(1.2);
+    background-color: #c82333;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+.preview-marker {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: rgba(0, 123, 255, 0.3);
+    border: 2px solid #007bff;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1000;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+}
+
+
+
+#user-markers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+#user-markers > div {
+    pointer-events: auto;
+}
+
+.user-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.user-item:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-place:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.btn-remove:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+/* Стили для поиска */
+#user-search {
+    margin-bottom: 1rem;
+}
+
+/* Анимации */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    #map-container {
+        height: 50vh;
+        min-height: 300px;
+        max-height: 500px;
+    }
+    
+    .user-item {
+        font-size: 0.9rem;
+    }
+}
+
+/* Стили для модального окна */
+#placementModal .modal-content {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+#placementModal .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+#placementModal .modal-title {
+    color: #495057;
+    font-weight: 600;
+}
+
+/* Стили для карточки пользователя */
+.user-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: white;
+}
+
+.user-card h6 {
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.user-card p {
+    margin-bottom: 0.25rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Стили для состояния загрузки */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Улучшенные стили для кнопок */
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.btn-group-sm .btn i {
+    font-size: 0.875rem;
+}
+
+/* Стили для пустого состояния */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state h5 {
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+
+.empty-state p {
+    margin-bottom: 1.5rem;
+}
+
+/* Улучшенные стили для удобного скроллинга */
+#map-container {
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f8f9fa;
+    cursor: grab;
+}
+
+#map-container:active {
+    cursor: grabbing;
+}
+
+#map-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#map-container::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+#map-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+#map-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+#building-plan {
+    width: auto;
+    height: auto;
+    max-width: none;
+}
