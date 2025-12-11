@@ -98,7 +98,6 @@ class LDAPManager:
             
             if 'whenChanged' in entry and entry.whenChanged.value:                  # Проверяем, существует ли атрибут `whenChanged` в записи и оно не пустое
                 when_changed = entry.whenChanged.value                              # Получаем значение временной метки из LDAP
-                print(when_changed)
                 if when_changed.tzinfo is not None:                                 # Проверяем, имеет ли datetime временную зону
                     when_changed = when_changed.astimezone(timezone.utc).replace(tzinfo=None)                # Преобразуем к naive удаляет информацию о временной зоне
 

@@ -1,4 +1,5 @@
 import os
+import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy                             # для работы с ORM
 from flask_migrate import Migrate                                   # Обеспечивает систему миграций для SQLAlchemy и Автоматически отслеживает изменения в моделях
@@ -16,6 +17,9 @@ def create_app(config_class='app.config.Config'):                   # запус
     app = Flask(__name__, template_folder='templates', static_folder='static')                                           # иницилизируем 
     app.config.from_object(config_class)                            # загружаем конфигурацию
     
+    app.logger.setLevel(logging.INFO)                   # указываем уровено логирования
+
+
     Session(app)
 
     # Инициализация CSRF защиты
