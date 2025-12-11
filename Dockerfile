@@ -9,7 +9,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt gunicorn gevent
 
 # Копируем весь проект
-COPY . .
+COPY app/ app/
+COPY run.py .
 
 EXPOSE 5050
 
